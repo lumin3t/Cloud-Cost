@@ -2,3 +2,6 @@ fastapi==0.136.3
 pandas==3.0.3
 python-dotenv==1.2.2
 smolagents==1.26.0
+"smolagents[litellm]"==1.26.0
+uvicorn==0.34.0
+python-multipart==0.0.5
