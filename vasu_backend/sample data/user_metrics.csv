@@ -1,0 +1,7 @@
+resource_id,service,cpu_usage,memory_usage,hours_running,monthly_cost
+vm-001,EC2,2,10,720,60
+vm-002,EC2,88,70,720,120
+vm-003,EC2,3,8,720,55
+db-001,RDS,6,20,720,200
+db-002,RDS,78,65,720,180
+auth-api,AppService,85,98,720,90
