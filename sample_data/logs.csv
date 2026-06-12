@@ -1,0 +1,11 @@
+timestamp,service,status_code,error_message
+2026-05-04 10:00,auth-api,500,Database timeout
+2026-05-04 10:01,auth-api,500,Database timeout
+2026-05-04 10:02,auth-api,500,Database timeout
+2026-05-04 10:03,auth-api,500,Database timeout
+2026-05-04 10:04,auth-api,500,Database timeout
+2026-05-04 10:05,auth-api,500,Database timeout
+2026-05-04 10:06,auth-api,500,Database timeout
+2026-05-04 10:07,auth-api,500,Database timeout
+2026-05-04 10:08,auth-api,500,Database timeout
+2026-05-04 10:09,auth-api,500,Database timeout

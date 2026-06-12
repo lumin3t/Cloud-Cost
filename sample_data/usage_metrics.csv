@@ -1,0 +1,6 @@
+resource_id,service,cpu_usage,memory_usage,hours_running,monthly_cost
+auth-vm-01,auth-api,45,55,720,60
+auth-vm-01,auth-api,48,58,720,60
+auth-vm-01,auth-api,50,60,720,60
+auth-vm-01,auth-api,88,98,720,60
+auth-vm-01,auth-api,85,97,720,60
