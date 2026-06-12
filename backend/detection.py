@@ -23,8 +23,12 @@ def run_detection(stored_files):
                 "estimated_saving": float(round(max_cost - min_cost, 2))
             })
 
-    # --- IDLE VM DETECTION ---
-    idle_vms = usage[(usage["cpu_usage"] < 10) & (usage["hours_running"] >= 700)]
+    # --- IDLE VM DETECTION (exclude RDS) ---
+    idle_vms = usage[
+        (usage["cpu_usage"] < 10) &
+        (usage["hours_running"] >= 700) &
+        (usage["service"] != "RDS")
+    ]
     for _, row in idle_vms.iterrows():
         findings.append({
             "type": "idle_vm",
@@ -60,4 +64,81 @@ def run_detection(stored_files):
                 "estimated_saving": 0
             })
 
+    # --- SECURITY ANOMALY DETECTION ---
+    auth_errors = error_logs[error_logs["service"] == "auth-api"]
+    if len(auth_errors) > 5:
+        findings.append({
+            "type": "security_anomaly",
+            "severity": "high",
+            "resource": "auth-api",
+            "detail": f"auth-api had {int(len(auth_errors))} failures — possible brute force or misconfiguration",
+            "estimated_saving": 0
+        })
+
+    # --- NO AUTOSCALING DETECTION ---
+    high_cpu = usage[(usage["cpu_usage"] > 80) & (usage["hours_running"] >= 700)]
+    for _, row in high_cpu.iterrows():
+        findings.append({
+            "type": "no_autoscaling",
+            "severity": "medium",
+            "resource": str(row["resource_id"]),
+            "detail": f"{row['resource_id']} is running at {int(row['cpu_usage'])}% CPU constantly — autoscaling recommended",
+            "estimated_saving": 0
+        })
+
+    # --- COMPLIANCE FLAG (exclude RDS) ---
+    always_on = usage[
+        (usage["hours_running"] >= 720) &
+        (usage["service"] != "RDS") &
+        (usage["cpu_usage"] < 10)
+    ]
+    for _, row in always_on.iterrows():
+        findings.append({
+            "type": "compliance_flag",
+            "severity": "medium",
+            "resource": str(row["resource_id"]),
+            "detail": f"{row['resource_id']} has no shutdown policy — running 24/7 with low usage violates cost governance",
+            "estimated_saving": float(round(row["monthly_cost"] * 0.3, 2))
+        })
+
     return findings
+
+
+def calculate_health_score(stored_files, findings):
+    usage = stored_files["usage_metrics"]
+    logs = stored_files["logs"]
+    billing = stored_files["billing"]
+
+    # Cost efficiency — penalize idle resources
+    idle_count = len(usage[usage["cpu_usage"] < 10])
+    total_resources = len(usage)
+    cost_efficiency = max(0, 100 - (idle_count / total_resources * 100))
+
+    # Reliability — penalize errors
+    error_count = len(logs[logs["status_code"] == 500])
+    reliability = max(0, 100 - (error_count * 5))
+
+    # Resource utilization — 60% CPU is ideal
+    avg_cpu = float(usage["cpu_usage"].mean())
+    utilization = max(0, 100 - abs(avg_cpu - 60))
+
+    # Logging efficiency — penalize CloudWatch spike
+    billing_by_service = billing.groupby("service")["cost"].max()
+    cloudwatch_cost = float(billing_by_service.get("CloudWatch", 0))
+    logging_efficiency = max(0, 100 - (cloudwatch_cost / 2))
+
+    overall = round(
+        (cost_efficiency * 0.3) +
+        (reliability * 0.3) +
+        (utilization * 0.2) +
+        (logging_efficiency * 0.2),
+        1
+    )
+
+    return {
+        "overall": overall,
+        "cost_efficiency": round(cost_efficiency, 1),
+        "reliability": round(reliability, 1),
+        "resource_utilization": round(utilization, 1),
+        "logging_efficiency": round(logging_efficiency, 1)
+    }
