@@ -204,24 +204,6 @@ function Home() {
               )}
             </div>
 
-            {/* Upload Dropdown */}
-            <div className="w-full bg-surface/80 backdrop-blur-md rounded-2xl border border-border overflow-hidden shadow-xs">
-              <button 
-                onClick={() => toggleSection("upload")} 
-                className="w-full px-6 py-4 text-left font-bold uppercase tracking-wider text-sm text-text-title bg-bg/20 flex justify-between items-center cursor-pointer hover:bg-bg/40 transition-colors"
-              >
-                <span>Upload Results</span>
-                <svg className={`w-4 h-4 transition-transform ${openSections.upload ? "rotate-180" : ""}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M19 9l-7 7-7-7" />
-                </svg>
-              </button>
-              {openSections.upload && (
-                <div className="p-6 border-t border-border">
-                  <Upload />
-                </div>
-              )}
-            </div>
-
             {/* Remediate Dropdown */}
             <div className="w-full bg-surface/80 backdrop-blur-md rounded-2xl border border-border overflow-hidden shadow-xs">
               <button 
