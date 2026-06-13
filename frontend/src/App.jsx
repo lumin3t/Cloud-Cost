@@ -20,7 +20,7 @@ function Home() {
     if (file) form.append("file", file);
 
     try {
-      const res = await fetch("/api/analyse", {
+      const res = await fetch("/api/ask", {
         method: "POST",
         body: form,
       });
@@ -104,7 +104,7 @@ function Home() {
               onClick={handleAnalyse} 
               className="w-full sm:w-auto px-8 py-3 bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-600 hover:opacity-95 text-white font-bold text-sm uppercase tracking-wider rounded-xl shadow-lg shadow-purple-500/20 active:scale-[0.99] transition-all cursor-pointer"
             >
-              Analyze
+              Ask AI
             </button>
           </div>
 
