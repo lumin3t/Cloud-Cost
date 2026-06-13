@@ -32,6 +32,9 @@ export default function NavBar() {
       <div className="flex items-center gap-6">
         <ul className="flex items-center gap-6 text-xs font-bold uppercase tracking-wider text-text/70">
           <li>
+            <Link to="/" className="hover:text-text-title transition-colors">Home</Link>
+          </li>
+          <li>
             <Link to="/login" className="hover:text-text-title transition-colors">Login</Link>
           </li>
           <li>

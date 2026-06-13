@@ -27,6 +27,21 @@ export default function Analyze() {
     fetchAnalysis();
   }, []);
 
+  const getSeverityColor = (severity) => {
+    switch ((severity || "").toLowerCase()) {
+      case "critical":
+        return "text-red-500";
+      case "high":
+        return "text-orange-500";
+      case "medium":
+        return "text-yellow-500";
+      case "low":
+        return "text-green-500";
+      default:
+        return "text-gray-400";
+    }
+  };
+
   const fetchAnalysis =
     async () => {
       try {
@@ -80,7 +95,7 @@ export default function Analyze() {
       {title}
     </p>
 
-    <h3 className="mt-2 text-2xl font-bold text-text-title">
+    <h3 className="mt-2 text-l font-bold">
       {value}
     </h3>
   </div>
@@ -314,12 +329,7 @@ export default function Analyze() {
                 </div>
 
                 <div
-                  className="
-                  px-3
-                  py-1
-                  rounded-full
-                  bg-purple-500/20
-                "
+                  className={`px-3 py-1 text-sm font-semibold ${getSeverityColor(f.severity)}`}
                 >
 
                   {

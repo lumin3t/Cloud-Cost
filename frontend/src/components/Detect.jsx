@@ -24,6 +24,21 @@ export default function Detect() {
     }
   };
 
+  const getSeverityColor = (severity) => {
+    switch ((severity || "").toLowerCase()) {
+      case "critical":
+        return "text-red-500";
+      case "high":
+        return "text-orange-500";
+      case "medium":
+        return "text-yellow-500";
+      case "low":
+        return "text-green-500";
+      default:
+        return "text-gray-400";
+    }
+  };
+
   if (loading) {
     return (
       <div className="p-8 text-center">
@@ -54,6 +69,7 @@ export default function Detect() {
           >
             <div className="flex justify-between">
 
+              {/* Left content */}
               <div>
                 <div className="font-bold">
                   {item.resource}
@@ -64,13 +80,15 @@ export default function Detect() {
                 </div>
               </div>
 
+              {/* Severity (now color-coded properly) */}
               <div
-                className="
-                px-3
-                py-1
-                rounded-full
-                bg-purple-500/20
-              "
+                className={`
+                  px-3
+                  py-1
+                  text-sm
+                  font-semibold
+                  ${getSeverityColor(item.severity)}
+                `}
               >
                 {item.severity}
               </div>

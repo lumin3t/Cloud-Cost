@@ -32,7 +32,7 @@ export default function Health() {
     "
     >
       <h3 className="font-bold mb-4">
-        Backend Health
+        Health
       </h3>
 
       <div className="flex items-center gap-3">

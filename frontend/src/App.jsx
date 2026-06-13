@@ -176,13 +176,11 @@ function Home() {
 
         </section>
 
-        <div className="mb-10">
-          <Health />
-        </div>
-
         {hasAnalyzed && (
           <>
-
+            <div className="mb-10">
+             <Health />
+            </div>
             {/* Ask Hero */}
 
             {/* AI SUMMARY */}

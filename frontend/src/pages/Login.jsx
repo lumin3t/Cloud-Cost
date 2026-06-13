@@ -23,7 +23,7 @@ function Login() {
           <div>
             <input 
               type="text" 
-              placeholder="Email or Phone Number" 
+              placeholder="Email" 
               className="w-full p-3.5 rounded-xl border border-border bg-surface text-text-title placeholder:text-text/40 focus:outline-hidden focus:ring-2 focus:ring-purple-500/50 focus:border-purple-500 transition-all shadow-xs text-sm"
             />
           </div>
