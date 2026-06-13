@@ -1,7 +1,10 @@
+import json
+
 import pandas as pd
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
+from remediation import generate_remediation
 from upload import router as upload_router, stored_files
 from detection import run_detection, calculate_health_score
 from agent import run_agent
@@ -46,11 +49,56 @@ def ask(payload: AskRequest):
 def remediate():
     if not stored_files:
         return {"error": "No files uploaded yet"}
-    answer = run_agent(
-        stored_files,
-        "Call get_resource_metrics and get_error_patterns tools. Then list specific fixes for each problem found. Be concrete and technical."
+
+    findings = run_detection(stored_files)
+
+
+    recommendations = generate_remediation(findings)
+    critical = sum(1 for r in recommendations if r["priority"] == "critical")
+    high = sum(1 for r in recommendations if r["priority"] == "high")
+    medium = sum(1 for r in recommendations if r["priority"] == "medium")
+
+    total_savings = sum(
+        r.get("estimated_saving", 0)
+        for r in recommendations
     )
-    return {"remediation_plan": answer}
+
+    recommendation_score = {
+        "critical": critical,
+        "high": high,
+        "medium": medium,
+        "total_monthly_savings": round(total_savings, 2)
+    }
+
+    findings_json = json.dumps(findings, indent=2)
+
+    ai_summary = run_agent(
+        stored_files,
+        f"""
+        Findings:
+
+        {findings_json}
+        Total projected savings: ${total_savings}
+
+        Summarize ONLY these findings.
+        Do not introduce information not present in the findings.
+        Prioritize by severity and estimated savings.
+        Use the provided total savings value.
+        Do not invent new metrics.
+        Keep under 150 words.
+        Provide:
+        1. Top 3 issues
+        2. Expected monthly savings
+        3. Recommended execution order
+        Keep under 150 words.
+        """
+    )
+
+    return {
+        "recommendation_score": recommendation_score,
+        "recommendations": recommendations,
+        "executive_summary": ai_summary
+    }
 
 @app.post("/analyze")
 def analyze():
