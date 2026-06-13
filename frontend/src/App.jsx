@@ -5,17 +5,36 @@ import Register from "./pages/register";
 import ForgotPassword from "./pages/forgotpassword";
 import NavBar from "./components/NavBar";
 
+// Import your new components
+import Analyze from "./components/Analyze";
+import Detect from "./components/Detect";
+import Ask from "./components/Ask";
+import Health from "./components/Health";
+import Upload from "./components/Upload";
+import Remediate from "./components/Remediate";
+
 function Home() {
-  //small change to track
   const [prompt, setPrompt] = useState("");
   const [file, setFile] = useState(null);
+  
+  // Track if analysis has run to reveal the new components
+  const [hasAnalyzed, setHasAnalyzed] = useState(false);
+
+  // Track dropdown visibility states for each component
+  const [openSections, setOpenSections] = useState({
+    analyze: false,
+    detect: false,
+    ask: false,
+    upload: false,
+    remediate: false,
+  });
 
   const handleFileChange = (e) => {
     setFile(e.target.files[0] ?? null);
   };
 
   const handleAnalyse = async () => {
-    const form = new FormData();
+    /*const form = new FormData();
     form.append("prompt", prompt);
     if (file) form.append("file", file);
 
@@ -27,10 +46,25 @@ function Home() {
       const data = await res.json();
       console.log("Analyse result:", data);
       alert("Analyse finished (check console).");
+      
+      // Reveal the result components
+      setHasAnalyzed(true);
     } catch (err) {
       console.error(err);
       alert("Analyse failed.");
-    }
+    }*/
+  console.log("Mock analyse triggered");
+
+  // Temporary fake result visibility
+  setHasAnalyzed(true);
+
+  // Optional: fake success message
+  alert("Preview mode: showing all result sections.");
+  };
+
+  // Helper to toggle specific dropdowns
+  const toggleSection = (section) => {
+    setOpenSections((prev) => ({ ...prev, [section]: !prev[section] }));
   };
 
   return (
@@ -56,7 +90,7 @@ function Home() {
         </div>
 
         {/* Form Dashboard Module (Modern Floating Card Container) */}
-        <div className="w-full bg-surface/80 backdrop-blur-md rounded-3xl border border-border shadow-[0_20px_50px_rgba(0,0,0,0.05)] dark:shadow-[0_20px_50px_rgba(0,0,0,0.3)] p-8 md:p-10 relative z-10">
+        <div className="w-full bg-surface/80 backdrop-blur-md rounded-3xl border border-border shadow-[0_20px_50px_rgba(0,0,0,0.05)] dark:shadow-[0_20px_50px_rgba(0,0,0,0.3)] p-8 md:p-10 relative z-10 mb-10">
           
           {/* AI Prompt Input */}
           <div className="mb-6">
@@ -78,8 +112,6 @@ function Home() {
               Billing data upload (CSV)
             </label>
             <div className="group relative w-full border border-dashed border-border rounded-2xl p-8 bg-bg/30 hover:bg-bg/10 flex flex-col items-center justify-center gap-3 transition-all duration-300">
-              
-              {/* Subtle hover gradient frame effect */}
               <div className="absolute inset-0 rounded-2xl border border-transparent group-hover:border-purple-500/30 pointer-events-none transition-all" />
 
               <input 
@@ -98,7 +130,7 @@ function Home() {
             </div>
           </div>
 
-          {/* Primary Submit Button with Striking Premium Gradient */}
+          {/* Primary Submit Button */}
           <div className="flex justify-end">
             <button 
               onClick={handleAnalyse} 
@@ -107,8 +139,109 @@ function Home() {
               Ask AI
             </button>
           </div>
-
         </div>
+
+        {/* Health Status Dashboard Area (Always Visible) */}
+        <div className="w-full mb-8">
+          <Health />
+        </div>
+
+        {/* Conditional Component Dropdown Sections (Revealed after execution) */}
+        {hasAnalyzed && (
+          <div className="w-full space-y-4">
+            
+            {/* Analyze Dropdown */}
+            <div className="w-full bg-surface/80 backdrop-blur-md rounded-2xl border border-border overflow-hidden shadow-xs">
+              <button 
+                onClick={() => toggleSection("analyze")} 
+                className="w-full px-6 py-4 text-left font-bold uppercase tracking-wider text-sm text-text-title bg-bg/20 flex justify-between items-center cursor-pointer hover:bg-bg/40 transition-colors"
+              >
+                <span>Analyze Results</span>
+                <svg className={`w-4 h-4 transition-transform ${openSections.analyze ? "rotate-180" : ""}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M19 9l-7 7-7-7" />
+                </svg>
+              </button>
+              {openSections.analyze && (
+                <div className="p-6 border-t border-border">
+                  <Analyze />
+                </div>
+              )}
+            </div>
+
+            {/* Detect Dropdown */}
+            <div className="w-full bg-surface/80 backdrop-blur-md rounded-2xl border border-border overflow-hidden shadow-xs">
+              <button 
+                onClick={() => toggleSection("detect")} 
+                className="w-full px-6 py-4 text-left font-bold uppercase tracking-wider text-sm text-text-title bg-bg/20 flex justify-between items-center cursor-pointer hover:bg-bg/40 transition-colors"
+              >
+                <span>Detect Results</span>
+                <svg className={`w-4 h-4 transition-transform ${openSections.detect ? "rotate-180" : ""}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M19 9l-7 7-7-7" />
+                </svg>
+              </button>
+              {openSections.detect && (
+                <div className="p-6 border-t border-border">
+                  <Detect />
+                </div>
+              )}
+            </div>
+
+            {/* Ask AI Dropdown */}
+            <div className="w-full bg-surface/80 backdrop-blur-md rounded-2xl border border-border overflow-hidden shadow-xs">
+              <button 
+                onClick={() => toggleSection("ask")} 
+                className="w-full px-6 py-4 text-left font-bold uppercase tracking-wider text-sm text-text-title bg-bg/20 flex justify-between items-center cursor-pointer hover:bg-bg/40 transition-colors"
+              >
+                <span>Ask Results</span>
+                <svg className={`w-4 h-4 transition-transform ${openSections.ask ? "rotate-180" : ""}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M19 9l-7 7-7-7" />
+                </svg>
+              </button>
+              {openSections.ask && (
+                <div className="p-6 border-t border-border">
+                  <Ask />
+                </div>
+              )}
+            </div>
+
+            {/* Upload Dropdown */}
+            <div className="w-full bg-surface/80 backdrop-blur-md rounded-2xl border border-border overflow-hidden shadow-xs">
+              <button 
+                onClick={() => toggleSection("upload")} 
+                className="w-full px-6 py-4 text-left font-bold uppercase tracking-wider text-sm text-text-title bg-bg/20 flex justify-between items-center cursor-pointer hover:bg-bg/40 transition-colors"
+              >
+                <span>Upload Results</span>
+                <svg className={`w-4 h-4 transition-transform ${openSections.upload ? "rotate-180" : ""}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M19 9l-7 7-7-7" />
+                </svg>
+              </button>
+              {openSections.upload && (
+                <div className="p-6 border-t border-border">
+                  <Upload />
+                </div>
+              )}
+            </div>
+
+            {/* Remediate Dropdown */}
+            <div className="w-full bg-surface/80 backdrop-blur-md rounded-2xl border border-border overflow-hidden shadow-xs">
+              <button 
+                onClick={() => toggleSection("remediate")} 
+                className="w-full px-6 py-4 text-left font-bold uppercase tracking-wider text-sm text-text-title bg-bg/20 flex justify-between items-center cursor-pointer hover:bg-bg/40 transition-colors"
+              >
+                <span>Remediate Results</span>
+                <svg className={`w-4 h-4 transition-transform ${openSections.remediate ? "rotate-180" : ""}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M19 9l-7 7-7-7" />
+                </svg>
+              </button>
+              {openSections.remediate && (
+                <div className="p-6 border-t border-border">
+                  <Remediate />
+                </div>
+              )}
+            </div>
+
+          </div>
+        )}
       </main>
     </div>
   );
