@@ -122,7 +122,12 @@ def connect_aws(payload: AWSConnectRequest):
 
         return {
             "success": True,
-            "message": "AWS connected successfully"
+            "message": "AWS connected successfully",
+            "datasets": {
+                "billing": aws_data["billing"].to_csv(index=False),
+                "usage_metrics": aws_data["usage_metrics"].to_csv(index=False),
+                "logs": aws_data["logs"].to_csv(index=False)
+            }
         }
 
     except Exception as e:

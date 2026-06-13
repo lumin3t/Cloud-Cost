@@ -11,7 +11,7 @@ export default defineConfig({
     proxy: {
       // Intercepts any frontend request starting with '/api' and routes it to Uvicorn
       '/api': {
-        target: 'http://127.0.0.1:8080',
+        target: 'http://127.0.0.1:8000',
         changeOrigin: true,
         rewrite: (path) => path.replace(/^\/api/, ''), // Strips '/api' before hitting backend
       }
