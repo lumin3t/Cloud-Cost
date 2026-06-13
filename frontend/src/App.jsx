@@ -6,6 +6,7 @@ import ForgotPassword from "./pages/forgotpassword";
 import NavBar from "./components/NavBar";
 
 function Home() {
+  //small change to track
   const [prompt, setPrompt] = useState("");
   const [file, setFile] = useState(null);
 
