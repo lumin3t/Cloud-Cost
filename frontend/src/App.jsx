@@ -1,83 +1,115 @@
 import { useState } from "react";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-import Login from "./pages/login";
-import Register from "./pages/register";
-import ForgotPassword from "./pages/forgotpassword";
+
+import Login from "./pages/Login";
+import Register from "./pages/Register";
+import ForgotPassword from "./pages/ForgotPassword";
+
 import NavBar from "./components/NavBar";
 
-// Import your new components
+import Upload from "./components/Upload";
+import Ask from "./components/Ask";
 import Analyze from "./components/Analyze";
 import Detect from "./components/Detect";
-import Ask from "./components/Ask";
-import Health from "./components/Health";
-import Upload from "./components/Upload";
 import Remediate from "./components/Remediate";
+import Health from "./components/Health";
+import ConnectAWS from "./pages/ConnectAWS";
 
 function Home() {
   const [prompt, setPrompt] = useState("");
-  const [file, setFile] = useState(null);
-  
-  // Track if analysis has run to reveal the new components
-  const [hasAnalyzed, setHasAnalyzed] = useState(false);
 
-  // Track dropdown visibility states for each component
+  const [hasAnalyzed, setHasAnalyzed] = useState(false);
+  const [loading, setLoading] = useState(false);
+
+  const [askResult, setAskResult] = useState("");
+
   const [openSections, setOpenSections] = useState({
-    analyze: false,
-    detect: false,
-    ask: false,
-    upload: false,
-    remediate: false,
+    analyze: true,
+    detect: true,
+    remediate: true,
   });
 
-  const handleFileChange = (e) => {
-    setFile(e.target.files[0] ?? null);
+  const toggleSection = (name) => {
+    setOpenSections((prev) => ({
+      ...prev,
+      [name]: !prev[name],
+    }));
   };
 
   const handleAnalyse = async () => {
-    /*const form = new FormData();
-    form.append("prompt", prompt);
-    if (file) form.append("file", file);
-
     try {
+      setLoading(true);
+
       const res = await fetch("/api/ask", {
         method: "POST",
-        body: form,
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          question: prompt,
+        }),
       });
+
       const data = await res.json();
-      console.log("Analyse result:", data);
-      alert("Analyse finished (check console).");
-      
-      // Reveal the result components
+
+      setAskResult(data.answer || "No response");
+
       setHasAnalyzed(true);
+
     } catch (err) {
       console.error(err);
-      alert("Analyse failed.");
-    }*/
-  console.log("Mock analyse triggered");
 
-  // Temporary fake result visibility
-  setHasAnalyzed(true);
+      setAskResult("Failed to generate summary.");
+      setHasAnalyzed(true);
 
-  // Optional: fake success message
-  alert("Preview mode: showing all result sections.");
+    } finally {
+      setLoading(false);
+    }
   };
 
-  // Helper to toggle specific dropdowns
-  const toggleSection = (section) => {
-    setOpenSections((prev) => ({ ...prev, [section]: !prev[section] }));
-  };
+  const ResultCard = ({
+    title,
+    open,
+    onToggle,
+    children,
+  }) => (
+    <div className="bg-surface/80 backdrop-blur-xl rounded-3xl border border-border overflow-hidden shadow-lg">
+
+      <button
+        onClick={onToggle}
+        className="w-full px-6 py-5 flex justify-between items-center hover:bg-white/3 transition cursor-pointer"
+      >
+        <h3 className="text-lg font-bold text-text-title">
+          {title}
+        </h3>
+
+        <span
+          className={`transition ${
+            open ? "rotate-180" : ""
+          }`}
+        >
+          ▼
+        </span>
+      </button>
+
+      {open && (
+        <div className="border-t border-border p-6">
+          {children}
+        </div>
+      )}
+    </div>
+  );
 
   return (
-    <div className="min-h-screen bg-bg text-text selection:bg-purple-500/30">
+    <div className="min-h-screen bg-bg text-text">
+
       <NavBar />
 
-      <main className="mx-auto max-w-4xl px-6 py-16 flex flex-col items-center relative overflow-hidden">
-        
-        {/* Decorative Background Rainbow Blur Glows */}
-        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[500px] h-[250px] bg-gradient-to-r from-pink-500 via-purple-500 to-cyan-500 rounded-full opacity-15 dark:opacity-20 blur-[100px] pointer-events-none" />
+      <main className="max-w-7xl mx-auto px-6 py-14">
 
-        {/* Title Block - Extra Bold AI App Typography */}
-        <div className="text-center mb-12 relative z-10">
+        {/* Hero */}
+
+       <div className="text-center mb-12 relative z-10">
           <h1 className="text-5xl md:text-7xl font-bold tracking-tighter text-text-title mb-4 leading-tight">
             Cloud{" "}
             <span className="bg-gradient-to-r from-indigo-500 via-purple-500 via-pink-500 to-amber-400 bg-clip-text text-transparent animate-gradient-xy">
@@ -89,142 +121,144 @@ function Home() {
           </p>
         </div>
 
-        {/* Form Dashboard Module (Modern Floating Card Container) */}
-        <div className="w-full bg-surface/80 backdrop-blur-md rounded-3xl border border-border shadow-[0_20px_50px_rgba(0,0,0,0.05)] dark:shadow-[0_20px_50px_rgba(0,0,0,0.3)] p-8 md:p-10 relative z-10 mb-10">
-          
-          {/* AI Prompt Input */}
-          <div className="mb-6">
-            <label className="block text-xs font-bold uppercase tracking-widest text-text-title/70 mb-2.5">
-              Ask Cloud Guardian doubts
-            </label>
-            <textarea
-              value={prompt}
-              onChange={(e) => setPrompt(e.target.value)}
-              placeholder="Ask Cloud Guardian to check for vulnerabilities, analyze IAM permissions, or optimize clusters..."
-              rows={4}
-              className="w-full p-4 rounded-2xl border border-border bg-surface text-text-title placeholder:text-text/40 focus:outline-hidden focus:ring-2 focus:ring-purple-500/50 focus:border-purple-500 transition-all resize-none shadow-xs"
-            />
+        {/* Input */}
+
+        <section className="rounded-[32px] border border-border bg-surface/70 backdrop-blur-xl p-8 shadow-xl mb-10">
+
+          <label className="text-xs uppercase tracking-widest text-text/50 font-bold">
+            Ask AI
+          </label>
+
+          <textarea
+            rows={4}
+            value={prompt}
+            onChange={(e) => setPrompt(e.target.value)}
+            placeholder="Why did my cloud bill increase?"
+            className="
+              mt-3
+              w-full
+              rounded-2xl
+              border
+              border-border
+              bg-bg/20
+              p-5
+              resize-none
+              outline-none
+            "
+          />
+
+          <div className="mt-6">
+            <Upload />
           </div>
 
-          {/* Upload Section - Rainbow Gradient Hover Zone */}
-          <div className="mb-8">
-            <label className="block text-xs font-bold uppercase tracking-widest text-text-title/70 mb-2.5">
-              Billing data upload (CSV)
-            </label>
-            <div className="group relative w-full border border-dashed border-border rounded-2xl p-8 bg-bg/30 hover:bg-bg/10 flex flex-col items-center justify-center gap-3 transition-all duration-300">
-              <div className="absolute inset-0 rounded-2xl border border-transparent group-hover:border-purple-500/30 pointer-events-none transition-all" />
+          <div className="flex justify-center mt-8">
 
-              <input 
-                type="file" 
-                onChange={handleFileChange} 
-                className="w-full max-w-xs text-sm text-text text-center file:mr-4 file:py-2 file:px-5 file:rounded-full file:border-0 file:text-xs file:font-bold file:uppercase file:tracking-wider file:bg-gradient-to-r file:from-purple-600 file:to-indigo-600 file:text-white hover:file:opacity-90 cursor-pointer file:cursor-pointer"
-              />
-              {file ? (
-                <div className="text-xs font-mono bg-code-bg px-4 py-2 rounded-xl border border-border text-text-title flex items-center gap-2 mt-2 shadow-xs">
-                  <span className="w-2 h-2 rounded-full bg-cyan-400 animate-ping"></span>
-                  {file.name}
-                </div>
-              ) : (
-                <span className="text-xs text-text/40 mt-1">Upload `.json`, `.yaml`, or infrastructure sheets</span>
-              )}
-            </div>
-          </div>
-
-          {/* Primary Submit Button */}
-          <div className="flex justify-end">
-            <button 
-              onClick={handleAnalyse} 
-              className="w-full sm:w-auto px-8 py-3 bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-600 hover:opacity-95 text-white font-bold text-sm uppercase tracking-wider rounded-xl shadow-lg shadow-purple-500/20 active:scale-[0.99] transition-all cursor-pointer"
+            <button
+              onClick={handleAnalyse}
+              disabled={loading}
+              className="
+                px-10
+                py-3
+                rounded-2xl
+                bg-text-title
+                text-bg
+                font-bold
+                hover:scale-[1.02]
+                active:scale-[0.98]
+                transition
+                cursor-pointer
+              "
             >
-              Ask AI
+              {loading ? "Thinking..." : "Ask AI"}
             </button>
-          </div>
-        </div>
 
-        {/* Health Status Dashboard Area (Always Visible) */}
-        <div className="w-full mb-8">
+          </div>
+
+        </section>
+
+        <div className="mb-10">
           <Health />
         </div>
 
-        {/* Conditional Component Dropdown Sections (Revealed after execution) */}
         {hasAnalyzed && (
-          <div className="w-full space-y-4">
-            
-            {/* Analyze Dropdown */}
-            <div className="w-full bg-surface/80 backdrop-blur-md rounded-2xl border border-border overflow-hidden shadow-xs">
-              <button 
-                onClick={() => toggleSection("analyze")} 
-                className="w-full px-6 py-4 text-left font-bold uppercase tracking-wider text-sm text-text-title bg-bg/20 flex justify-between items-center cursor-pointer hover:bg-bg/40 transition-colors"
-              >
-                <span>Analyze Results</span>
-                <svg className={`w-4 h-4 transition-transform ${openSections.analyze ? "rotate-180" : ""}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M19 9l-7 7-7-7" />
-                </svg>
-              </button>
-              {openSections.analyze && (
-                <div className="p-6 border-t border-border">
-                  <Analyze />
-                </div>
-              )}
-            </div>
+          <>
 
-            {/* Detect Dropdown */}
-            <div className="w-full bg-surface/80 backdrop-blur-md rounded-2xl border border-border overflow-hidden shadow-xs">
-              <button 
-                onClick={() => toggleSection("detect")} 
-                className="w-full px-6 py-4 text-left font-bold uppercase tracking-wider text-sm text-text-title bg-bg/20 flex justify-between items-center cursor-pointer hover:bg-bg/40 transition-colors"
-              >
-                <span>Detect Results</span>
-                <svg className={`w-4 h-4 transition-transform ${openSections.detect ? "rotate-180" : ""}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M19 9l-7 7-7-7" />
-                </svg>
-              </button>
-              {openSections.detect && (
-                <div className="p-6 border-t border-border">
-                  <Detect />
-                </div>
-              )}
-            </div>
+            {/* Ask Hero */}
 
-            {/* Ask AI Dropdown */}
-            <div className="w-full bg-surface/80 backdrop-blur-md rounded-2xl border border-border overflow-hidden shadow-xs">
-              <button 
-                onClick={() => toggleSection("ask")} 
-                className="w-full px-6 py-4 text-left font-bold uppercase tracking-wider text-sm text-text-title bg-bg/20 flex justify-between items-center cursor-pointer hover:bg-bg/40 transition-colors"
-              >
-                <span>Ask Results</span>
-                <svg className={`w-4 h-4 transition-transform ${openSections.ask ? "rotate-180" : ""}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M19 9l-7 7-7-7" />
-                </svg>
-              </button>
-              {openSections.ask && (
-                <div className="p-6 border-t border-border">
-                  <Ask />
-                </div>
-              )}
-            </div>
+            {/* AI SUMMARY */}
+<section className="mb-8">
+  <div
+    className="
+      rounded-3xl
+      p-6
+      bg-gradient-to-r
+      from-purple-600/10
+      to-cyan-600/10
+      border
+      border-border
+      backdrop-blur-md
+    "
+  >
+    <div
+      className="
+        mb-4
+        text-xs
+        uppercase
+        tracking-widest
+        text-purple-400
+        font-bold
+      "
+    >
+      AI Generated Summary
+    </div>
+    <Ask result={askResult} />
+  </div>
+</section>
 
-            {/* Remediate Dropdown */}
-            <div className="w-full bg-surface/80 backdrop-blur-md rounded-2xl border border-border overflow-hidden shadow-xs">
-              <button 
-                onClick={() => toggleSection("remediate")} 
-                className="w-full px-6 py-4 text-left font-bold uppercase tracking-wider text-sm text-text-title bg-bg/20 flex justify-between items-center cursor-pointer hover:bg-bg/40 transition-colors"
+            {/* Result Grid */}
+
+            <div className="grid md:grid-cols-2 gap-6">
+
+              <ResultCard
+                title="Issue Detection"
+                open={openSections.detect}
+                onToggle={() =>
+                  toggleSection("detect")
+                }
               >
-                <span>Remediate Results</span>
-                <svg className={`w-4 h-4 transition-transform ${openSections.remediate ? "rotate-180" : ""}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M19 9l-7 7-7-7" />
-                </svg>
-              </button>
-              {openSections.remediate && (
-                <div className="p-6 border-t border-border">
+                <Detect />
+              </ResultCard>
+              <ResultCard
+                  title="Remediation Plan"
+                  open={openSections.remediate}
+                  onToggle={() =>
+                    toggleSection("remediate")
+                  }
+                >
                   <Remediate />
-                </div>
-              )}
+                </ResultCard>
+              <div className="md:col-span-2">
+
+
+                              <ResultCard
+                title="Detailed Analysis"
+                open={openSections.analyze}
+                onToggle={() =>
+                  toggleSection("analyze")
+                }
+              >
+                <Analyze />
+              </ResultCard>
+
+              </div>
+
             </div>
 
-          </div>
+          </>
         )}
+
       </main>
+
     </div>
   );
 }
@@ -232,12 +266,36 @@ function Home() {
 export default function App() {
   return (
     <BrowserRouter>
+
       <Routes>
-        <Route path="/login" element={<Login />} />
-        <Route path="/register" element={<Register />} />
-        <Route path="/forgot-password" element={<ForgotPassword />} />
-        <Route path="/*" element={<Home />} />
+
+        <Route
+          path="/login"
+          element={<Login />}
+        />
+
+        <Route
+          path="/register"
+          element={<Register />}
+        />
+
+        <Route
+          path="/forgot-password"
+          element={<ForgotPassword />}
+        />
+
+        <Route
+          path="/*"
+          element={<Home />}
+        />
+
+        <Route
+          path="/connect-aws"
+          element={<ConnectAWS />}
+        />
+
       </Routes>
+
     </BrowserRouter>
   );
 }

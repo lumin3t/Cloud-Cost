@@ -44,9 +44,11 @@ function Login() {
         </div>
 
         {/* Primary Action Call */}
-        <button className="w-full py-3.5 bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-600 hover:opacity-95 text-white font-bold text-sm uppercase tracking-wider rounded-xl shadow-md shadow-purple-500/10 active:scale-[0.99] transition-all cursor-pointer">
-          Log In
-        </button>
+        <Link to="/">
+          <button className="w-full py-3.5 bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-600 hover:opacity-95 text-white font-bold text-sm uppercase tracking-wider rounded-xl shadow-md shadow-purple-500/10 active:scale-[0.99] transition-all cursor-pointer">
+            Log In
+          </button>
+        </Link>
 
         {/* Footer Redirect Navigation */}
         <p className="mt-8 text-xs text-text/70 font-medium">

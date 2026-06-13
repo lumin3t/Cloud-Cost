@@ -38,7 +38,7 @@ export default function NavBar() {
             <Link to="/register" className="hover:text-text-title transition-colors">Register</Link>
           </li>
           <li>
-            <Link to="/" className="hover:text-text-title transition-colors">Connect AWS</Link>
+            <Link to="/connect-aws " className="hover:text-text-title transition-colors">Connect AWS</Link>
           </li>
         </ul>
 

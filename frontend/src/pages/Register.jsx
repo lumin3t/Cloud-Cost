@@ -23,7 +23,7 @@ function Register() {
           <div>
             <input 
               type="text" 
-              placeholder="Full Name" 
+              placeholder="Username" 
               className="w-full p-3.5 rounded-xl border border-border bg-surface text-text-title placeholder:text-text/40 focus:outline-hidden focus:ring-2 focus:ring-purple-500/50 focus:border-purple-500 transition-all shadow-xs text-sm"
             />
           </div>
@@ -31,20 +31,6 @@ function Register() {
             <input 
               type="email" 
               placeholder="Email" 
-              className="w-full p-3.5 rounded-xl border border-border bg-surface text-text-title placeholder:text-text/40 focus:outline-hidden focus:ring-2 focus:ring-purple-500/50 focus:border-purple-500 transition-all shadow-xs text-sm"
-            />
-          </div>
-          <div>
-            <input 
-              type="text" 
-              placeholder="Phone Number" 
-              className="w-full p-3.5 rounded-xl border border-border bg-surface text-text-title placeholder:text-text/40 focus:outline-hidden focus:ring-2 focus:ring-purple-500/50 focus:border-purple-500 transition-all shadow-xs text-sm"
-            />
-          </div>
-          <div>
-            <input 
-              type="text" 
-              placeholder="Country" 
               className="w-full p-3.5 rounded-xl border border-border bg-surface text-text-title placeholder:text-text/40 focus:outline-hidden focus:ring-2 focus:ring-purple-500/50 focus:border-purple-500 transition-all shadow-xs text-sm"
             />
           </div>
@@ -58,9 +44,11 @@ function Register() {
         </div>
 
         {/* Primary Submission Call */}
-        <button className="w-full py-3.5 bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-600 hover:opacity-95 text-white font-bold text-sm uppercase tracking-wider rounded-xl shadow-md shadow-purple-500/10 active:scale-[0.99] transition-all cursor-pointer">
-          Register
-        </button>
+        <Link to="/login">
+          <button className="w-full py-3.5 bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-600 hover:opacity-95 text-white font-bold text-sm uppercase tracking-wider rounded-xl shadow-md shadow-purple-500/10 active:scale-[0.99] transition-all cursor-pointer">
+            Register
+          </button>
+        </Link>
 
         {/* Footer Redirect Navigation */}
         <p className="mt-8 text-xs text-text/70 font-medium">
