@@ -1,55 +1,115 @@
+import { useState } from "react";
 import NavBar from "../components/NavBar";
 
 export default function ConnectAWS() {
+
+  const [accessKey, setAccessKey] = useState("");
+  const [secretKey, setSecretKey] = useState("");
+  const [region, setRegion] = useState("us-east-1");
+
+  const connectAWS = async () => {
+
+    try {
+
+      const res = await fetch(
+        "/api/connect-aws",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({
+            access_key: accessKey,
+            secret_key: secretKey,
+            region: region
+          })
+        }
+      );
+
+      const data = await res.json();
+
+      alert(data.message);
+
+    } catch (err) {
+
+      console.error(err);
+
+      alert("Connection failed");
+    }
+  };
+
   return (
     <>
       <NavBar />
+
       <div className="min-h-screen flex items-center justify-center p-4">
+
         <div className="w-full max-w-2xl">
 
-        {/* Title */}
-        <div className="text-center mb-8">
-          <h1 className="text-lg text-text-title">
-            Connect to AWS
-          </h1>
-          <p className="mt-2 text-xs text-text/60">
-            Follow the steps below to securely connect your AWS account
-          </p>
-        </div>
+          <div className="text-center mb-8">
 
-        {/* Steps */}
-        <div className="space-y-3">
+            <h1 className="text-lg text-text-title">
+              Connect AWS
+            </h1>
 
-          <div className="rounded-2xl border border-border/50 bg-bg/20 p-3 text-center">
-            <div className="text-xs text-purple-400/80 mb-1">Step 01</div>
-            <p className="text-xs text-text-title/80">
-              Create an IAM user in your AWS account.
+            <p className="mt-2 text-xs text-text/60">
+              Connect your AWS account securely
             </p>
+
           </div>
 
-          <div className="rounded-2xl border border-border/50 bg-bg/20 p-3 text-center">
-            <div className="text-xs text-purple-400/80 mb-1">Step 02</div>
-            <p className="text-xs text-text-title/80">
-              Attach read-only policies (Cost Explorer, EC2, S3, CloudWatch).
-            </p>
+          <div className="space-y-4">
+
+            <input
+              type="text"
+              placeholder="AWS Access Key"
+              value={accessKey}
+              onChange={(e) =>
+                setAccessKey(e.target.value)
+              }
+              className="w-full p-3 rounded-xl bg-bg/20 border border-border"
+            />
+
+            <input
+              type="password"
+              placeholder="AWS Secret Key"
+              value={secretKey}
+              onChange={(e) =>
+                setSecretKey(e.target.value)
+              }
+              className="w-full p-3 rounded-xl bg-bg/20 border border-border"
+            />
+
+            <input
+              type="text"
+              placeholder="Region"
+              value={region}
+              onChange={(e) =>
+                setRegion(e.target.value)
+              }
+              className="w-full p-3 rounded-xl bg-bg/20 border border-border"
+            />
+
+            <button
+              onClick={connectAWS}
+              className="
+                w-full
+                py-3
+                rounded-xl
+                bg-purple-600
+                text-white
+                font-bold
+                cursor-pointer
+              "
+            >
+              Connect AWS
+            </button>
+
           </div>
 
-          <div className="rounded-2xl border border-border/50 bg-bg/20 p-3 text-center">
-            <div className="text-xs text-purple-400/80 mb-1">Step 03</div>
-            <p className="text-xs text-text-title/80">
-              Add AWS credentials (Access Key + Secret Key) securely.
-            </p>
-          </div>
-
-        </div>
-
-        {/* Footer hint */}
-        <div className="mt-6 text-xs text-text/50 text-center">
-          Read-only permissions only no modifications made!
         </div>
 
       </div>
-    </div>
-   </>
+    </>
   );
 }

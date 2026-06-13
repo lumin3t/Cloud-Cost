@@ -5,6 +5,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from remediation import generate_remediation
+from aws_connector import load_aws_data
 from upload import router as upload_router, stored_files
 from detection import run_detection, calculate_health_score
 from agent import run_agent
@@ -22,6 +23,11 @@ app.include_router(upload_router)
 
 class AskRequest(BaseModel):
     question: str
+
+class AWSConnectRequest(BaseModel):
+    access_key: str
+    secret_key: str
+    region: str = "us-east-1"
 
 @app.get("/")
 def root():
@@ -99,6 +105,32 @@ def remediate():
         "recommendations": recommendations,
         "executive_summary": ai_summary
     }
+
+@app.post("/connect-aws")
+def connect_aws(payload: AWSConnectRequest):
+
+    try:
+
+        aws_data = load_aws_data(
+            payload.access_key,
+            payload.secret_key,
+            payload.region
+        )
+
+        stored_files.clear()
+        stored_files.update(aws_data)
+
+        return {
+            "success": True,
+            "message": "AWS connected successfully"
+        }
+
+    except Exception as e:
+
+        return {
+            "success": False,
+            "message": str(e)
+        }
 
 @app.post("/analyze")
 def analyze():
