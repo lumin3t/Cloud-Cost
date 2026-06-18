@@ -1,4 +1,4 @@
-# .github/workflows/deploy.yml 
+#.github/workflows/deploy.yml
 name: Deploy Cloud-Cost Platform
 
 on:
@@ -20,11 +20,7 @@ jobs:
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           script: |
             cd /home/luminet/Documents/Projects/Cloud-Cost
-
-            git reset --hard
             git pull origin main
-
             docker compose down
             docker compose up -d --build
-
             docker system prune -f
