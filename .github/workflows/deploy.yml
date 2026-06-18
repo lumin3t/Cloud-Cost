@@ -31,12 +31,15 @@ jobs:
           script: |
             cd /home/luminet/Documents/Projects/Cloud-Cost
             
-            # Fetch latest changes
+            # Fetch latest
             git pull origin main
             
-            # Restart services
+            # BUILD THE FRONTEND
+            cd frontend
+            npm install
+            npm run build
+            cd ..
+            
+            # Now restart containers
             docker compose down
             docker compose up -d --build
-            
-            # Clean up disk space
-            docker system prune -f
