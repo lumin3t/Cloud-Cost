@@ -8,3 +8,5 @@ python-multipart==0.0.5
 google-genai
 pydantic
 boto3
+prometheus-client
+prometheus-fastapi-instrumentator

@@ -9,6 +9,7 @@ from aws_connector import load_aws_data
 from upload import router as upload_router, stored_files
 from detection import run_detection, calculate_health_score
 from agent import run_agent
+from prometheus_fastapi_instrumentator import Instrumentator
 
 app = FastAPI()
 
@@ -28,6 +29,8 @@ class AWSConnectRequest(BaseModel):
     access_key: str
     secret_key: str
     region: str = "us-east-1"
+
+Instrumentator().instrument(app).expose(app)
 
 @app.get("/")
 def root():
